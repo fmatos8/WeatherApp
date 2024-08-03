@@ -54,6 +54,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.annotation.ExperimentalCoilApi
+import coil.compose.rememberImagePainter
+import coil.transform.CircleCropTransformation
 import pt.fabiomatos.weatherapp.ui.theme.WeatherAppTheme
 import pt.fabiomatos.weatherapp.utils.Constants
 import pt.fabiomatos.weatherapp.utils.Utils
@@ -127,14 +129,14 @@ fun TopContent(curent: Current) {
     Box(
         modifier = Modifier
             .fillMaxWidth()
-            .height(400.dp)
+            .height(300.dp)
     ) {
         Image(
             painter = painterResource(id = R.drawable.weather), // Replace with your drawable resource
             contentDescription = null,
             modifier = Modifier
                 .fillMaxSize()
-                .height(400.dp),
+                .height(300.dp),
             contentScale = ContentScale.Crop // Adjust the scale as needed
         )
         Column(
@@ -151,10 +153,10 @@ fun TopContent(curent: Current) {
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Image(
-//                painter = rememberImagePainter(
-//                    data = "http://openweathermap.org/img/wn/${curent.weather[0].icon}@2x.png"
-//                ),
-                    painter = painterResource(id = R.drawable.sun),
+                    painter = rememberImagePainter(
+                        data = "https://openweathermap.org/img/wn/${curent.weather[0].icon}.png"
+                    ),
+                    //painter = painterResource(id = R.drawable.sun),
                     contentDescription = null,
                     modifier = Modifier.size(50.dp)
                 )
@@ -206,12 +208,13 @@ fun TopContent(curent: Current) {
                 ) {
                     DotGraph(
                         dots = listOf(
-                            Pair(100f, 100f),
-                            Pair(200f, 200f),
-                            Pair(250f, 210f),
-                            Pair(300f, 250f),
-                            Pair(400f, 280f),
-                            Pair(500f, 290f)
+                            Pair(20f, 0f),
+                            Pair(200f, 20f),
+                            Pair(250f, 70f),
+                            Pair(300f, 40f),
+                            Pair(400f, 50f),
+                            Pair(600f, 80f),
+                            Pair(800f, 90f)
                         )
                     )
                 }
@@ -266,13 +269,13 @@ fun DailyWeather(viewModel: BaseViewModel = viewModel()){
             contentPadding = PaddingValues(vertical = 8.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
-            val groupedDays = Utils.GroupItemsByDay(daily).toList()
+            val groupedDays = Utils.GroupItemsByDay(daily).toList().drop(1)
             items(groupedDays) { index ->
 
                 Text(
                     text = Utils.formatDayWeather(index.first, Constants.MMM_DD),
                     fontWeight = FontWeight.Bold,
-                    fontSize = 26.sp,
+                    fontSize = 20.sp,
                     color = Color.Black,
                     textAlign = TextAlign.Start,
                     modifier = Modifier
@@ -281,7 +284,7 @@ fun DailyWeather(viewModel: BaseViewModel = viewModel()){
 
                 LazyRow(
                     contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
-                    horizontalArrangement = Arrangement.spacedBy(16.dp),
+                    horizontalArrangement = Arrangement.SpaceEvenly,
                     modifier = Modifier.fillMaxWidth().background(Color.White)
                 ) {
 
@@ -292,19 +295,22 @@ fun DailyWeather(viewModel: BaseViewModel = viewModel()){
                             horizontalAlignment = Alignment.CenterHorizontally
                         ) {
                             Image(
-                                painter = painterResource(id = R.drawable.sun),
+                                painter = rememberImagePainter(
+                                    data = "https://openweathermap.org/img/wn/${item.weather[0].icon}.png"
+                                ),
+                                //painter = painterResource(id = R.drawable.sun),
                                 contentDescription = null,
-                                modifier = Modifier.size(30.dp)
+                                modifier = Modifier.size(40.dp)
                             )
                             Text(
                                 text = "${String.format("%.0f", item.main?.temp)}º",
-                                fontSize = 22.sp,
+                                fontSize = 16.sp,
                                 color = Color.Black,
                                 textAlign = TextAlign.Center
                             )
                             Text(
                                 text = String.format("%02d",Utils.getHourFromDateTime(item.dtTxt!!)),
-                                fontSize = 18.sp,
+                                fontSize = 14.sp,
                                 color = Color.Gray,
                                 textAlign = TextAlign.Center
                             )
@@ -362,7 +368,7 @@ fun GreetingPreview() {
                             Text(
                                 text = Utils.formatDayWeather(index.first, Constants.MMM_DD),
                                 fontWeight = FontWeight.Bold,
-                                fontSize = 26.sp,
+                                fontSize = 18.sp,
                                 color = Color.Black,
                                 textAlign = TextAlign.Start,
                                 modifier = Modifier
@@ -382,19 +388,22 @@ fun GreetingPreview() {
                                         horizontalAlignment = Alignment.CenterHorizontally
                                     ) {
                                         Image(
-                                            painter = painterResource(id = R.drawable.sun),
+                                            painter = rememberImagePainter(
+                                                data = "http://openweathermap.org/img/wn/${item.weather[0].icon}@2x.png"
+                                            ),
+                                            //painter = painterResource(id = R.drawable.sun),
                                             contentDescription = null,
                                             modifier = Modifier.size(30.dp)
                                         )
                                         Text(
                                             text = "${String.format("%.0f", item.main?.temp)}º",
-                                            fontSize = 22.sp,
+                                            fontSize = 18.sp,
                                             color = Color.Black,
                                             textAlign = TextAlign.Center
                                         )
                                         Text(
                                             text = String.format("%02d",Utils.getHourFromDateTime(item.dtTxt!!)),
-                                            fontSize = 18.sp,
+                                            fontSize = 16.sp,
                                             color = Color.Gray,
                                             textAlign = TextAlign.Center
                                         )
