@@ -13,7 +13,7 @@ object RetrofitInstance {
 
     val service: WeatherService by lazy {
         Retrofit.Builder()
-            .baseUrl("https://api.openweathermap.org/data/3.0/")
+            .baseUrl("https://api.openweathermap.org/data/")
             .client(client)
             .addConverterFactory(GsonConverterFactory.create())
             .build()

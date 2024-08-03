@@ -2,6 +2,7 @@ package pt.fabiomatos.weatherapp.utils
 
 import android.os.Build
 import androidx.annotation.RequiresApi
+import pt.fabiomatos.weatherapp.ListDay
 import java.time.Instant
 import java.time.LocalDate
 import java.time.LocalDateTime
@@ -36,5 +37,23 @@ object Utils {
         }
 
         return "$result, $formattedDate"
+    }
+
+    @RequiresApi(Build.VERSION_CODES.O)
+    fun parseIsoDateTime(timestamp: String): LocalDateTime {
+        val formatter = DateTimeFormatter.ISO_DATE_TIME
+        return LocalDateTime.parse(timestamp, formatter)
+    }
+
+    @RequiresApi(Build.VERSION_CODES.O)
+    fun formatLocalDate(date: LocalDate, outputFormat: DateTimeFormatter): String {
+        return date.format(outputFormat)
+    }
+
+    @RequiresApi(Build.VERSION_CODES.O)
+    fun GroupItemsByDay(items: List<ListDay>): Map<LocalDate, List<ListDay>> {
+        val formatter = DateTimeFormatter.ISO_DATE_TIME
+        return items.groupBy { LocalDateTime.parse(LocalDateTime.ofInstant(Instant.ofEpochSecond(it.dt!!), ZoneId.systemDefault())
+            .toString(), formatter).toLocalDate() }
     }
 }

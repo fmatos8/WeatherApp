@@ -2,6 +2,7 @@ package pt.fabiomatos.weatherapp.repository
 
 import pt.fabiomatos.weatherapp.Current
 import pt.fabiomatos.weatherapp.Response
+import pt.fabiomatos.weatherapp.models.Forecast
 import pt.fabiomatos.weatherapp.utils.RetrofitInstance
 
 class WeatherRepository {
@@ -9,5 +10,9 @@ class WeatherRepository {
 
     suspend fun getWeather(): Response {
         return api.getWeather()
+    }
+
+    suspend fun getWeatherDays(): Forecast {
+        return api.getWeatherDays()
     }
 }

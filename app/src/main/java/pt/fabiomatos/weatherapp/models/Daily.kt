@@ -6,7 +6,7 @@ import com.google.gson.annotations.SerializedName
 data class Daily(
 
     @SerializedName("dt")
-    var dt: Int? = null,
+    var dt: Long? = null,
     @SerializedName("sunrise")
     var sunrise: Int? = null,
     @SerializedName("sunset")
