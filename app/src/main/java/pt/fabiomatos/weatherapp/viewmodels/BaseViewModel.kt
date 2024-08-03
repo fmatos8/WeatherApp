@@ -9,26 +9,27 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.launch
 import pt.fabiomatos.weatherapp.Current
+import pt.fabiomatos.weatherapp.Response
 import pt.fabiomatos.weatherapp.repository.WeatherRepository
 
 class BaseViewModel : ViewModel() {
 
     private val repository = WeatherRepository()
 
-    private val _current = MutableLiveData<Current>()
-    val cast: LiveData<Current> get() = _current
+    private val _current = MutableLiveData<Response>()
+    val cast: LiveData<Response> get() = _current
 
     private val _isLoading = mutableStateOf(false)
     val isLoading: State<Boolean> get() = _isLoading
 
-    internal fun fetchCurrent() {
+    internal fun fetchWeather() {
         if (_current.value != null) return // Avoid multiple calls
 
         _isLoading.value = true
 
         viewModelScope.launch {
             try {
-                val response = repository.getCurrent()
+                val response = repository.getWeather()
                 _current.value = response
 
                 Log.i("FETCH  CURRENT -> ", _current.value!!.toString())

@@ -7,5 +7,5 @@ import retrofit2.http.GET
 interface WeatherService {
 
     @GET("onecall")
-    suspend fun getCurrent(): Current
+    suspend fun getWeather(): Response
 }
