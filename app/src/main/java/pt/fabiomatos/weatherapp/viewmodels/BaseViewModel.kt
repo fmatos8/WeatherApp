@@ -16,8 +16,12 @@ class BaseViewModel : ViewModel() {
 
     private val repository = WeatherRepository()
 
-    private val _current = MutableLiveData<Response>()
-    val cast: LiveData<Response> get() = _current
+
+
+    private val _current = mutableStateOf<Response?>(null)
+    val current: State<Response?> get() = _current
+
+
 
     private val _isLoading = mutableStateOf(false)
     val isLoading: State<Boolean> get() = _isLoading
