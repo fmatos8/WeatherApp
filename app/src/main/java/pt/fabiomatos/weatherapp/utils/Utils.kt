@@ -14,20 +14,16 @@ import java.util.Locale
 object Utils {
 
     @RequiresApi(Build.VERSION_CODES.O)
-    fun convertTimestampToDate(timestamp: Long): String {
-
-        val dateTime = LocalDateTime.ofInstant(Instant.ofEpochSecond(timestamp), ZoneId.systemDefault())
-        val date = dateTime.toLocalDate()
+    fun formatDayWeather(date: LocalDate, outputFormat: DateTimeFormatter): String {
 
         // Get today's date and tomorrow's date
         val today = LocalDate.now()
         val tomorrow = today.plusDays(1)
 
-        val dayOfWeek = dateTime.dayOfWeek.getDisplayName(TextStyle.FULL, Locale.getDefault())
+        val dayOfWeek = date.dayOfWeek.getDisplayName(TextStyle.FULL, Locale.getDefault())
 
         // Format the LocalDateTime to a string
-        val formatter = DateTimeFormatter.ofPattern("MMM dd")
-        val formattedDate = dateTime.format(formatter)
+        val formattedDate = date.format(outputFormat)
 
         // Determine if the date is today, tomorrow, or another day
         val result = when (date) {
@@ -40,14 +36,14 @@ object Utils {
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
-    fun parseIsoDateTime(timestamp: String): LocalDateTime {
-        val formatter = DateTimeFormatter.ISO_DATE_TIME
-        return LocalDateTime.parse(timestamp, formatter)
+    fun formatLocalDate(date: LocalDate, outputFormat: DateTimeFormatter): String {
+        return date.format(outputFormat)
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
-    fun formatLocalDate(date: LocalDate, outputFormat: DateTimeFormatter): String {
-        return date.format(outputFormat)
+    fun getHourFromDateTime(dateTimeString: String): Int {
+        val dateTime = LocalDateTime.parse(dateTimeString, Constants.YYYY_MM_DD_HH_MM_SS)
+        return dateTime.hour
     }
 
     @RequiresApi(Build.VERSION_CODES.O)

@@ -40,7 +40,7 @@ data class Daily(
     @SerializedName("clouds")
     var clouds: Int? = null,
     @SerializedName("pop")
-    var pop: Int? = null,
+    var pop: Float? = null,
     @SerializedName("uvi")
     var uvi: Double? = null
 

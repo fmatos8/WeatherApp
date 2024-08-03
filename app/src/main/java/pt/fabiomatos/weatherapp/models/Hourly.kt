@@ -32,6 +32,6 @@ data class Hourly(
     @SerializedName("weather")
     var weather: ArrayList<Weather> = arrayListOf(),
     @SerializedName("pop")
-    var pop: Int? = null
+    var pop: Float? = null
 
 )

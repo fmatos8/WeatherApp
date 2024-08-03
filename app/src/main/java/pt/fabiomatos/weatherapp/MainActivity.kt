@@ -5,11 +5,8 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.os.Build
 import android.os.Bundle
-import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.activity.enableEdgeToEdge
-import androidx.activity.viewModels
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.Image
@@ -17,6 +14,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -27,6 +25,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -34,7 +33,6 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -56,13 +54,10 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.annotation.ExperimentalCoilApi
-import coil.compose.rememberImagePainter
-import pt.fabiomatos.weatherapp.ListDay
 import pt.fabiomatos.weatherapp.ui.theme.WeatherAppTheme
 import pt.fabiomatos.weatherapp.utils.Constants
 import pt.fabiomatos.weatherapp.utils.Utils
 import pt.fabiomatos.weatherapp.viewmodels.BaseViewModel
-import java.time.LocalDate
 
 
 class MainActivity : ComponentActivity() {
@@ -101,7 +96,6 @@ fun WeatherScreen(viewModel: BaseViewModel = viewModel()) {
 
     Column(
         modifier = Modifier
-            .verticalScroll(state = scrollState)
             .background(Color.LightGray)
     ) {
         LaunchedEffect(1) {
@@ -138,7 +132,9 @@ fun TopContent(curent: Current) {
         Image(
             painter = painterResource(id = R.drawable.weather), // Replace with your drawable resource
             contentDescription = null,
-            modifier = Modifier.fillMaxSize().height(400.dp),
+            modifier = Modifier
+                .fillMaxSize()
+                .height(400.dp),
             contentScale = ContentScale.Crop // Adjust the scale as needed
         )
         Column(
@@ -261,29 +257,61 @@ fun DailyWeather(viewModel: BaseViewModel = viewModel()){
     val daily by viewModel.daily.observeAsState(initial = emptyList())
     Row(
         modifier = Modifier
-            .fillMaxSize()
-            .padding(20.dp)
+            .fillMaxWidth()
+
     ) {
 
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-        ) {
 
-            LazyColumn {
-                val groupedDays = viewModel.GroupItemsByDay(daily).keys.toList()
-                items(groupedDays) { index ->
-                    Text(
-                        text = Utils.formatLocalDate(index, Constants.EEE_DD_MMMM),
-                        fontWeight = FontWeight.Bold,
-                        fontSize = 26.sp,
-                        color = Color.Black,
-                        textAlign = TextAlign.End,
-                        modifier = Modifier.padding(end = 10.dp)
-                    )
+        LazyColumn(
+            contentPadding = PaddingValues(vertical = 8.dp),
+            verticalArrangement = Arrangement.spacedBy(16.dp)
+        ) {
+            val groupedDays = Utils.GroupItemsByDay(daily).toList()
+            items(groupedDays) { index ->
+
+                Text(
+                    text = Utils.formatDayWeather(index.first, Constants.MMM_DD),
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 26.sp,
+                    color = Color.Black,
+                    textAlign = TextAlign.Start,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                )
+
+                LazyRow(
+                    contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
+                    horizontalArrangement = Arrangement.spacedBy(16.dp),
+                    modifier = Modifier.fillMaxWidth().background(Color.White)
+                ) {
+
+                    items(index.second) { item ->
+
+                        Column(
+                            verticalArrangement = Arrangement.Center,
+                            horizontalAlignment = Alignment.CenterHorizontally
+                        ) {
+                            Image(
+                                painter = painterResource(id = R.drawable.sun),
+                                contentDescription = null,
+                                modifier = Modifier.size(30.dp)
+                            )
+                            Text(
+                                text = "${String.format("%.0f", item.main?.temp)}º",
+                                fontSize = 22.sp,
+                                color = Color.Black,
+                                textAlign = TextAlign.Center
+                            )
+                            Text(
+                                text = String.format("%02d",Utils.getHourFromDateTime(item.dtTxt!!)),
+                                fontSize = 18.sp,
+                                color = Color.Gray,
+                                textAlign = TextAlign.Center
+                            )
+                        }
+                    }
                 }
             }
-
         }
     }
 }
@@ -298,7 +326,7 @@ fun GreetingPreview() {
         Surface(modifier = Modifier.fillMaxSize()) {
             Column(
                 modifier = Modifier
-
+                    .fillMaxWidth()
                     .background(Color.LightGray)
             ) {
 
@@ -307,48 +335,73 @@ fun GreetingPreview() {
                 )
 
                 val daily = listOf(
-                    ListDay(dt =1722848400),
-                    ListDay(dt =1722859200),
-                    ListDay(dt =1722870000),
-                    ListDay(dt =1722999600),
-                    ListDay(dt =1723010400),
-                    ListDay(dt =1723086000),
-                    ListDay(dt =1723096800),
-                    ListDay(dt =1723107600)
+                    ListDay(dt =1722848400, dtTxt = "2024-08-03 01:00:00"),
+                    ListDay(dt =1722859200, dtTxt = "2024-08-03 04:00:00"),
+                    ListDay(dt =1722870000, dtTxt = "2024-08-03 06:00:00"),
+                    ListDay(dt =1722999600, dtTxt = "2024-08-03 09:00:00"),
+                    ListDay(dt =1723010400, dtTxt = "2024-08-03 10:00:00"),
+                    ListDay(dt =1723086000, dtTxt = "2024-08-03 15:00:00"),
+                    ListDay(dt =1723096800, dtTxt = "2024-08-03 18:00:00"),
+                    ListDay(dt =1723107600, dtTxt = "2024-08-03 21:00:00")
                 )
 
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(20.dp)
+
                 ) {
 
-                    Column(
-                        modifier = Modifier
-                            .fillMaxWidth()
+
+                    LazyColumn(
+                        contentPadding = PaddingValues(vertical = 8.dp),
+                        verticalArrangement = Arrangement.spacedBy(16.dp)
                     ) {
-                        Text(
-                            text = Utils.formatLocalDate(LocalDate.of(2023, 8, 1), Constants.EEE_DD_MMMM),
-                            fontWeight = FontWeight.Bold,
-                            fontSize = 26.sp,
-                            color = Color.Black,
-                            textAlign = TextAlign.End,
-                            modifier = Modifier.padding(end = 10.dp)
-                        )
-                        LazyColumn {
-                            val groupedDays = Utils.GroupItemsByDay(daily).keys.toList()
-                            items(groupedDays) { index ->
-                                Text(
-                                    text = Utils.formatLocalDate(index, Constants.EEE_DD_MMMM),
-                                    fontWeight = FontWeight.Bold,
-                                    fontSize = 26.sp,
-                                    color = Color.Black,
-                                    textAlign = TextAlign.End,
-                                    modifier = Modifier.padding(end = 10.dp)
-                                )
+                        val groupedDays = Utils.GroupItemsByDay(daily).toList()
+                        items(groupedDays) { index ->
+
+                            Text(
+                                text = Utils.formatDayWeather(index.first, Constants.MMM_DD),
+                                fontWeight = FontWeight.Bold,
+                                fontSize = 26.sp,
+                                color = Color.Black,
+                                textAlign = TextAlign.Start,
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                            )
+
+                            LazyRow(
+                                contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
+                                horizontalArrangement = Arrangement.spacedBy(16.dp),
+                                modifier = Modifier.fillMaxWidth().background(Color.White)
+                            ) {
+
+                                items(index.second) { item ->
+
+                                    Column(
+                                        verticalArrangement = Arrangement.Center,
+                                        horizontalAlignment = Alignment.CenterHorizontally
+                                    ) {
+                                        Image(
+                                            painter = painterResource(id = R.drawable.sun),
+                                            contentDescription = null,
+                                            modifier = Modifier.size(30.dp)
+                                        )
+                                        Text(
+                                            text = "${String.format("%.0f", item.main?.temp)}º",
+                                            fontSize = 22.sp,
+                                            color = Color.Black,
+                                            textAlign = TextAlign.Center
+                                        )
+                                        Text(
+                                            text = String.format("%02d",Utils.getHourFromDateTime(item.dtTxt!!)),
+                                            fontSize = 18.sp,
+                                            color = Color.Gray,
+                                            textAlign = TextAlign.Center
+                                        )
+                                    }
+                                }
                             }
                         }
-
                     }
                 }
             }
